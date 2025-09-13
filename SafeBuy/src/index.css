@@ -1,5 +1,11 @@
 /* src/index.css */
 @import "tailwindcss";  /* v4 방식: 이 한 줄로 base/components/utilities 포함 */
+@theme {
+  --breakpoint-sm: 480px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+}
 
 @theme {
   --font-sans: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI",
