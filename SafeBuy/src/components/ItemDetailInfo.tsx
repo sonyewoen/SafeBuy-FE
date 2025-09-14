@@ -63,8 +63,12 @@ export default function ItemDetailInfo() {
               href={dummy.url}
               target="_blank"
               rel="noreferrer"
-              className="text-blue-600 underline"
-              style={{ ...typography.body.b5, lineHeight: "normal" }}
+              className="break-all"
+              style={{
+                ...typography.body.b5,
+                lineHeight: "normal",
+                color: colors.primary,
+              }}
             >
               {dummy.url}
             </a>

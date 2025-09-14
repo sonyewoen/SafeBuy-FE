@@ -8,7 +8,7 @@ export default function Header({ title }: { title: string }) {
     <header className="flex items-center w-full mb-6">
       {/* 뒤로가기 버튼 */}
       <button className={"cursor-pointer"} onClick={() => navigate(-1)}>
-        <img src={BackIcon} alt="뒤로가기"/>
+        <img src={BackIcon} />
       </button>
       {/* 페이지 타이틀 */}
       <h1 className="flex-1 text-center text-[20px] font-medium">{title}</h1>

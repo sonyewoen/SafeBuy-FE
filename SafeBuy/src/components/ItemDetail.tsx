@@ -2,12 +2,13 @@
 import { palette } from "../tokens/token";
 
 type ItemProps = {
-  imageUrl: string;
+  //실제 api 불러올 시 :로 변경
+  imageUrl?: string;
   mark?: string;
-  brand: string;
-  itemName: string;
-  price: string;
-  size?: "small" | "large"; // 카드 사이즈 분기
+  brand?: string;
+  itemName?: string;
+  price?: string;
+  size: "small" | "large"; // 카드 사이즈 분기
 };
 
 export default function ItemDetail({
@@ -22,7 +23,7 @@ export default function ItemDetail({
   // 사이즈별 스타일 정의
   const sizeConfig = {
     small: {
-      container: "w-[126px] h-[212px]",
+      container: "w-[126px]",
       image: "h-[110px] w-[110px]",
       brandFont: "14px",
       itemFont: "14px",
@@ -39,11 +40,15 @@ export default function ItemDetail({
 
   return (
     <div
-      className={`flex flex-col items-center rounded-lg cursor-pointer p-2 ${sizeConfig.container}`}
+      className={`flex flex-col bg-[#fff] items-center rounded-lg cursor-pointer p-2 ${sizeConfig.container}`}
     >
       {/* 이미지 */}
       <div className={`${sizeConfig.image} bg-gray-200 rounded mb-2`}>
-        <img src={imageUrl} alt={itemName} className="w-full h-full object-cover" />
+        <img
+          src={imageUrl}
+          alt={itemName}
+          className="w-full h-full object-cover"
+        />
       </div>
       {/* 상품 정보 */}
       <div className="block w-full font-semibold">
