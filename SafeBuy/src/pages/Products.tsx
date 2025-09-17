@@ -1,13 +1,10 @@
-import notFound from "../assets/img/NotFound.svg";
-import search from "../assets/img/searchbarWhite.svg";
-import searchTip from "../assets/img/searchTip.svg";
 import Header from "../components/Header";
 import ItemDetail from "../components/ItemDetail";
 import { colors, typography } from "../tokens/token";
 
 export default function SearchResult() {
   return (
-    <div className="p-4 min-h-[100dvh]">
+    <div className="p-4 min-h-[100dvh] max-w-[393px] mx-auto">
       <Header title="대체 상품" />
       <h1
         style={{

@@ -10,7 +10,7 @@ export default function SearchResult() {
 
   return (
     <div
-      className="p-4 min-h-[100dvh]"
+      className="p-4 min-h-[100dvh] max-w-[393px] mx-auto"
       style={{ background: colors.primarySoft }}
     >
       <Header title="검색 결과" />
@@ -22,7 +22,7 @@ export default function SearchResult() {
         aria-label="제품 정보 입력 화면으로 이동"
       >
         <img src={search} />
-      </button>{" "}
+      </button>
       <h1
         className="text-center mt-11"
         style={{

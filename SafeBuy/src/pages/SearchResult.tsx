@@ -10,7 +10,7 @@ export default function SearchResult() {
   const navigate = useNavigate();
   return (
     <div
-      className="p-4 min-h-[100dvh]"
+      className="p-4 min-h-[100dvh] max-w-[393px] mx-auto"
       style={{ background: colors.primarySoft }}
     >
       <Header title="검색 결과" />
