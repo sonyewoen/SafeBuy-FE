@@ -46,7 +46,7 @@ export default function SearchDetail() {
     // 업로드 버튼과 동일한 107×107
     previewSize: 107,
     previewRadius: 6,
-    photoGapX: 16,
+    photoGapX: 10,
   };
 
   return (
