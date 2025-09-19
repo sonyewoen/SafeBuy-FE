@@ -8,20 +8,30 @@ import InputInfo from '../components/InputInfo';
 import BtnLong from '../components/BtnLong';
 import iconX from '../assets/icon/icon_X.svg';
 
+type SearchPayload = {
+  productName?: string | null;
+  manufacturer?: string | null;
+  modelName?: string | null;   // ← 브랜드를 modelName 으로 매핑
+  image?: File | null;
+};
+
 export default function SearchDetail() {
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
   const [photoCount, setPhotoCount] = useState(0);
   const [photo, setPhoto] = useState<{ file: File; url: string } | null>(null);
-  
 
   // 입력값(버튼 활성화 조건에 사용)
-  const [name, setName] = useState('');
+  const [name, setName]   = useState('');
   const [maker, setMaker] = useState('');
   const [brand, setBrand] = useState('');
 
   // 버튼 활성화 규칙: 사진이 있거나 (상품명 && 브랜드)
-  const isReady = !!photo || (name.trim().length > 0 && brand.trim().length > 0);
+  const isReady =
+  name.trim().length > 0 ||
+  maker.trim().length > 0 ||
+  brand.trim().length > 0 ||
+  !!photo;
 
   useEffect(() => {
     return () => {
@@ -47,6 +57,21 @@ export default function SearchDetail() {
     previewSize: 107,
     previewRadius: 6,
     photoGapX: 10,
+  };
+
+  // ✅ 제출: 로딩 페이지로 이동하면서 API 페이로드 전달
+  const handleSubmit = () => {
+    if (!isReady) return;
+
+    const payload: SearchPayload = {
+      productName: name || null,
+      manufacturer: maker || null,
+      modelName: brand || null,
+      image: photo?.file ?? null,
+    };
+
+    // /loading 에서 실제 API 호출(fetch) 수행
+    navigate('/loading', { state: { payload } });
   };
 
   return (
@@ -223,8 +248,8 @@ export default function SearchDetail() {
           <BtnLong
             label="안전성 확인하기"
             disabled={!isReady}
-            onClick={() => navigate('/loading')}
-            />
+            onClick={handleSubmit}
+          />
         </div>
       </main>
     </div>

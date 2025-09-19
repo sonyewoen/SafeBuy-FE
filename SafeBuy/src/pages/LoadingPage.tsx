@@ -1,94 +1,71 @@
-// src/pages/LoadingPage.tsx
+import { useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Loading from '../components/Loading';
 import CautionInfo from '../components/CautionInfo';
-import { colors, typography, palette } from '../tokens/token';
+import { colors, typography } from '../tokens/token';
 import mascot from '../assets/img/mascot.svg';
+import { searchRecalls } from '../service/api';  // 함수
+import type { SearchPayload } from '../service/api'; // 타입
 
 export default function LoadingPage() {
-  // 🔧 레이아웃/스타일 노브
-  const UI = {
-    canvasW: 393,
-    padX: 16,
-    bgUseGradient: false,
-    titleTop: 80,
-    subGap: 4,
-    spinnerGap: 30,
-    spinnerSize: 56,
-    spinnerThickness: 6,
+  const navigate = useNavigate();
+  const { state } = useLocation() as { state?: { payload?: SearchPayload } };
 
-    cautionTop: 170,
-    cautionW: 361,
-    cautionInterval: 3000,
-    cautionStart: 0,
+  useEffect(() => {
+    console.log('API_BASE =', import.meta.env.VITE_API_BASE);
+    const payload = state?.payload;
+    if (!payload) {
+      navigate('/', { replace: true });
+      return;
+    }
 
-    // 마스코트: 주의 카드 섹션을 기준으로 배치 (px)
-    mascotW: 149,
-    mascotRight: 16,
-    mascotTopOverCaution: -135, // 섹션 상단에서 아래로(+)/위로(-) 이동
-  };
+    (async () => {
+      try {
+        const data = await searchRecalls(payload);
+        navigate('/result', { state: { data } });
+      } catch (err: any) {
+        navigate('/result', {
+          state: {
+            error: true,
+            message: err?.message ?? '요청 처리 중 오류가 발생했습니다.',
+          },
+        });
+      }
+    })();
+  }, [navigate, state]);
 
   return (
     <div
       className="min-h-[100dvh] grid place-items-center"
       style={{
-        background: UI.bgUseGradient
-          ? `linear-gradient(180deg, ${palette.blue['20']} 0%, #ffffff 31%)`
-          : colors.primarySoft,
+        background: colors.primarySoft,
       }}
     >
       <main
         className="relative w-full min-h-[100dvh] pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]"
-        style={{ maxWidth: UI.canvasW, paddingLeft: UI.padX, paddingRight: UI.padX }}
+        style={{ maxWidth: 393, paddingLeft: 16, paddingRight: 16 }}
       >
-        {/* 타이틀 & 서브텍스트 & 스피너 */}
-        <section className="text-center" style={{ marginTop: UI.titleTop }} aria-live="polite">
-          <h1
-            className="text-[#222] font-bold"
-            style={{
-              ...typography.head.h3,
-              lineHeight: `${typography.head.h3.lineHeight}px`,
-            }}
-          >
+        <section className="text-center" style={{ marginTop: 80 }} aria-live="polite">
+          <h1 className="text-[#222] font-bold" style={typography.head.h3}>
             안전성 검증 중...
           </h1>
-
-          <p
-            className="text-[#555]"
-            style={{
-              marginTop: UI.subGap,
-              ...typography.body.b3,
-              lineHeight: `${typography.body.b3.lineHeight}px`,
-            }}
-          >
+          <p className="text-[#555]" style={{ ...typography.body.b3, marginTop: 4 }}>
             잠시만 기다려주세요
           </p>
-
-          <div style={{ marginTop: UI.spinnerGap }}>
-            <Loading size={UI.spinnerSize} thickness={UI.spinnerThickness} arcColor={colors.primary} />
+          <div style={{ marginTop: 30 }}>
+            <Loading size={56} thickness={6} arcColor={colors.primary} />
           </div>
         </section>
 
-        {/* 주의 카드 섹션: 상대배치 기준 생성 */}
-        <section className="relative" style={{ marginTop: UI.cautionTop }}>
-          {/* 마스코트: 주의 카드 섹션을 기준으로 절대배치 (뒤로) */}
+        <section className="relative" style={{ marginTop: 170 }}>
           <img
             src={mascot}
             alt=""
             className="absolute pointer-events-none select-none z-10"
-            style={{
-              width: UI.mascotW,
-              right: UI.mascotRight,
-              top: UI.mascotTopOverCaution,
-            }}
+            style={{ width: 149, right: 16, top: -135 }}
           />
-
-          {/* 주의 카드(위로) */}
-          <div className="relative z-20" style={{ width: UI.cautionW, margin: '0 auto' }}>
-            <CautionInfo
-              className="w-full"
-              intervalMs={UI.cautionInterval}
-              startIndex={UI.cautionStart}
-            />
+          <div className="relative z-20" style={{ width: 361, margin: '0 auto' }}>
+            <CautionInfo className="w-full" intervalMs={3000} startIndex={0} />
           </div>
         </section>
       </main>

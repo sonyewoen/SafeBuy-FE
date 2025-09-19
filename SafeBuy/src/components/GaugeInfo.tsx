@@ -13,9 +13,9 @@ type Props = {
 
   // 바늘(이미지) 관련
   needleLengthRatio?: number;    // r 대비 길이 비율 (기본 0.62)
-  needleHeightRatio?: number;    // thickness 대비 높이 비율 (기본 0.9)
-  needleRestDeg?: number;        // 기본 각도(시안처럼 고정된 방향). 기본 210deg
+  needleHeightRatio?: number;    // thickness 대비 높이 비율 (기본 3)
   needleOpacity?: number;        // 기본 0.35
+  needleOffsetDeg?: number;      // 회전 보정각도 (선택, 기본 0)
 };
 
 export default function GaugeInfo({
@@ -27,8 +27,8 @@ export default function GaugeInfo({
   className = '',
   needleLengthRatio = 0.62,
   needleHeightRatio = 3,
-  needleRestDeg = 200,
   needleOpacity = 0.35,
+  needleOffsetDeg = 0,
 }: Props) {
   const id = useId();
   const v = clamp(value, 0, 100);
@@ -59,6 +59,9 @@ export default function GaugeInfo({
   }, [angleRad, cx, cy, r]);
 
   const { label, tone, ring, text } = getStatus(v);
+
+  // 바늘 각도 계산 (0 → 100 == 180° → 0°)
+  const needleDeg = 180 - (180 * v) / 100 + needleOffsetDeg;
 
   // 바늘 이미지 배치(왼쪽 중앙이 회전축)
   const needleLen = r * needleLengthRatio;
@@ -102,9 +105,9 @@ export default function GaugeInfo({
             }}
           />
 
-          {/* 바늘: 시안처럼 '기본 각도'로 고정 */}
+          {/* 바늘: 값에 따라 회전 */}
           <g
-            transform={`rotate(${needleRestDeg} ${cx} ${cy})`}
+            transform={`rotate(${needleDeg} ${cx} ${cy})`}
             style={{ transition: 'transform 300ms ease' }}
             opacity={needleOpacity}
           >
@@ -158,9 +161,7 @@ export default function GaugeInfo({
 
         {note && (
           <p className="mt-4 text-[16px] leading-[24px] text-center">
-            <span className="font-semibold text-[#555]">해당 제품은 </span>
-            <span className="font-bold text-[#333]">리콜 제품</span>
-            <span className="font-semibold text-[#555]">으로 확인되었습니다.</span>
+            <span className="font-semibold text-[#555]">{note}</span>
           </p>
         )}
       </div>
