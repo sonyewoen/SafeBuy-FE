@@ -198,7 +198,7 @@ export default function SearchDetail() {
               상품명
             </div>
             <InputInfo
-              placeholder="상품명을 입력해주세요."
+              placeholder="상품명을 입력해 주세요."
               value={name}
               onChange={setName}
             />
@@ -217,7 +217,7 @@ export default function SearchDetail() {
               제조사
             </div>
             <InputInfo
-              placeholder="제조사를 입력해주세요."
+              placeholder="제조사를 입력해 주세요."
               value={maker}
               onChange={setMaker}
             />
@@ -233,10 +233,10 @@ export default function SearchDetail() {
                 lineHeight: `${typography.body.b2.lineHeight}px`,
               }}
             >
-              브랜드
+              제조명
             </div>
             <InputInfo
-              placeholder="브랜드를 입력해주세요."
+              placeholder="브랜드를 입력해 주세요."
               value={brand}
               onChange={setBrand}
             />
