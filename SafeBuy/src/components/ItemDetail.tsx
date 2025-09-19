@@ -2,45 +2,51 @@
 import { palette } from "../tokens/token";
 
 type ItemProps = {
-  //실제 api 불러올 시 :로 변경
-  imageUrl?: string;
-  mark?: string;
-  brand?: string;
-  itemName?: string;
-  price?: string;
+  imageUrl: string;
+  maker: string;
+  itemName: string;
+  price: string;
+  link: string;
   size: "small" | "large"; // 카드 사이즈 분기
 };
 
 export default function ItemDetail({
   //더미데이터
   imageUrl,
-  mark = "",
-  brand = "브랜드",
+  maker = "브랜드",
   itemName = "콩순이 노래하고 연주하는 드럼실로폰",
   price = "23,000원",
   size = "large",
+  link,
 }: ItemProps) {
   // 사이즈별 스타일 정의
   const sizeConfig = {
     small: {
       container: "w-[126px]",
       image: "h-[110px] w-[110px]",
-      brandFont: "14px",
+      makerFont: "14px",
       itemFont: "14px",
       priceFont: "12px",
     },
     large: {
       container: "w-[166px] h-[268px]",
       image: "h-[150px] w-[150px]",
-      brandFont: "16px",
+      makerFont: "16px",
       itemFont: "16px",
       priceFont: "14px",
     },
   }[size];
-
+  // 클릭 시 제품 링크로 이동
+  const handleClick = () => {
+    if (link) {
+      window.open(link, "_blank", "noopener,noreferrer");
+    }
+  };
+  
   return (
     <div
       className={`flex flex-col bg-[#fff] items-center rounded-lg cursor-pointer p-2 ${sizeConfig.container}`}
+      onClick={handleClick}
     >
       {/* 이미지 */}
       <div className={`${sizeConfig.image} bg-gray-200 rounded mb-2`}>
@@ -52,18 +58,6 @@ export default function ItemDetail({
       </div>
       {/* 상품 정보 */}
       <div className="block w-full font-semibold">
-        {/* 인증 마크(있는 경우에만 표시) */}
-        {mark && (
-          <div
-            className="mb-1"
-            style={{
-              fontSize: sizeConfig.brandFont,
-              color: palette.blue["90"],
-            }}
-          >
-            {mark}
-          </div>
-        )}
         {/* 브랜드+상품명  */}
         <div
           className="block w-full"
@@ -77,7 +71,7 @@ export default function ItemDetail({
           }}
         >
           <span className="mr-[6px]" style={{ fontWeight: "600" }}>
-            {brand}
+            {maker}
           </span>
           <span style={{ fontWeight: "400" }}>{itemName}</span>
         </div>

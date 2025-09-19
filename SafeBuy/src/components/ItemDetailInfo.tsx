@@ -1,13 +1,13 @@
 // src/components/ItemDetailInfo.tsx
 import React from "react";
 import { colors, typography } from "../tokens/token";
-
+import icon from "../assets/icon/icon_arrow_R_2.svg";
 type ItemDetailInfoProps = {
-  productName?: string | null;      // 모델명/제품명
-  defectContent?: string | null;    // 결함 내용
-  manufacturer?: string | null;     // 제조사
-  publicationDate?: string | null;  // 공표일(YYYY-MM-DD 또는 ISO)
-  url?: string | null;              // 원본 링크(있으면)
+  productName?: string | null; // 모델명/제품명
+  defectContent?: string | null; // 결함 내용
+  manufacturer?: string | null; // 제조사
+  publicationDate?: string | null; // 공표일(YYYY-MM-DD 또는 ISO)
+  url?: string | null; // 원본 링크(있으면)
 };
 
 // YYYY-MM-DD 형태로 최대한 정규화
@@ -60,6 +60,11 @@ export default function ItemDetailInfo({
   const safeMaker = manufacturer?.trim() || "—";
   const safeDate = formatDate(publicationDate) || "—";
 
+  const handleClick = () => {
+    if (url) {
+      window.open(url, "_blank"); // 새 탭에서 열기
+    }
+  };
   return (
     <div className="rounded-md p-4">
       <div className="space-y-2 text-sm">
@@ -67,28 +72,21 @@ export default function ItemDetailInfo({
         <LabelRow label="결함 내용" value={safeDefect} />
         <LabelRow label="제조사" value={safeMaker} />
         <LabelRow label="공표일" value={safeDate} />
-        <LabelRow
-          label="원본 링크"
-          value={
-            url ? (
-              <a
-                href={url}
-                target="_blank"
-                rel="noreferrer"
-                className="break-all"
-                style={{
-                  ...typography.body.b5,
-                  lineHeight: "normal",
-                  color: colors.primary,
-                }}
-              >
-                {url}
-              </a>
-            ) : (
-              "—"
-            )
-          }
-        />
+        <span
+          onClick={handleClick}
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 4,
+            marginTop: 16,
+            ...typography.body.b4,
+            lineHeight: "normal",
+            color: colors.textMuted,
+          }}
+        >
+          더 자세한 내용 보러가기{" "}
+          <img src={icon} style={{ width: 12, height: 12 }} />
+        </span>
       </div>
     </div>
   );

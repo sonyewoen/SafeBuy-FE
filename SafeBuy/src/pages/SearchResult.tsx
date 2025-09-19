@@ -10,8 +10,9 @@ import type { SearchResponse } from "../service/api";
 export default function SearchResult() {
   const navigate = useNavigate();
   const { state } = useLocation() as {
-  state?: { data?: SearchResponse; error?: boolean; message?: string };
+    state?: { data?: SearchResponse; error?: boolean; message?: string };
   };
+  console.log("SearchResult state:", state);
 
   const data = state?.data;
   const error = state?.error;
@@ -44,14 +45,40 @@ export default function SearchResult() {
       {/* API 응답 데이터 */}
       {data && (
         <>
+          {/* 리콜 조회 결과(위험 점수) */}
           <div className="bg-[#ffffff] rounded-lg px-4 py-6 mt-6 mb-4">
             <GaugeInfo
               value={data.found ? 80 : 0} // TODO: 위험도 계산 로직 연결
               title={data.productName ?? "알 수 없는 제품"}
-              note={data.defectContent ?? ""}
+              note={
+                data.found ? (
+                  <span
+                    style={{
+                      color: colors.textSecondary,
+                      ...typography.body.b2,
+                      lineHeight: `${typography.body.b2.lineHeight}px`,
+                    }}
+                  >
+                    해당 제품은{" "}
+                    <span
+                      style={{
+                        color: colors.textPrimary,
+                        ...typography.body.b1,
+                        lineHeight: `${typography.body.b1.lineHeight}px`,
+                      }}
+                    >
+                      리콜 제품
+                    </span>
+                    으로 확인되었습니다.
+                  </span>
+                ) : (
+                  ""
+                )
+              }
             />
           </div>
 
+          {/* 상세 정보 */}
           <div className="bg-[#ffffff] rounded-lg mb-[42px]">
             <ItemDetailInfo
               productName={data?.productName}
@@ -61,6 +88,7 @@ export default function SearchResult() {
             />
           </div>
 
+          {/* 대체상품 추천 */}
           <h1
             style={{
               color: colors.textPrimary,
@@ -80,13 +108,25 @@ export default function SearchResult() {
           >
             안전한 대체 상품을 추천해드려요.
           </h3>
+
+          {/* 추천 상품 카드리스트 */}
           <div className="overflow-hidden -mr-4">
             <div className="flex gap-3">
-              <ItemDetail size="small" />
-              <ItemDetail size="small" mark="KC 안전인증" />
-              <ItemDetail size="small" />
+              {data.alternatives?.slice(0, 3).map((product, index) => (
+                <ItemDetail
+                  key={index}
+                  size="small"
+                  imageUrl={product.image}
+                  maker={product.maker}
+                  itemName={product.title}
+                  price={product.price}
+                  link={product.link}
+                />
+              ))}
             </div>
           </div>
+
+          {/* 더보기 버튼 */}
           <button
             className="w-full border text-center rounded-lg px-4 py-3 mt-4 bg-[#FFF] cursor-pointer"
             style={{
@@ -96,7 +136,7 @@ export default function SearchResult() {
               marginBottom: "16px",
               borderColor: colors.border,
             }}
-            onClick={() => navigate("/products")}
+            onClick={() => navigate("/products", { state: { data } })}
           >
             대체상품 더보기
           </button>
