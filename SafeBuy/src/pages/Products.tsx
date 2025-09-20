@@ -34,7 +34,6 @@ export default function Products() {
   return (
     <div
       className="p-4 min-h-[100dvh] max-w-[393px] mx-auto"
-      style={{ background: colors.primarySoft }}
     >
       <Header title="대체 상품" />
 
