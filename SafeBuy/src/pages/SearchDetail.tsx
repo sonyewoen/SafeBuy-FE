@@ -223,7 +223,7 @@ export default function SearchDetail() {
             />
           </div>
 
-          {/* 브랜드 */}
+          {/* 모델명 */}
           <div style={{ marginTop: UI.fieldGap }}>
             <div
               style={{
@@ -233,7 +233,7 @@ export default function SearchDetail() {
                 lineHeight: `${typography.body.b2.lineHeight}px`,
               }}
             >
-              제조명
+              모델명
             </div>
             <InputInfo
               placeholder="브랜드를 입력해 주세요."
