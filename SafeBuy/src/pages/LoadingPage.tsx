@@ -1,81 +1,175 @@
+// src/pages/LoadingPage.tsx
 import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Loading from "../components/Loading";
 import CautionInfo from "../components/CautionInfo";
-import { colors, typography } from "../tokens/token";
+import { colors, typography, palette } from "../tokens/token";
 import mascot from "../assets/img/mascot.svg";
-import { searchRecalls } from "../service/api"; // 함수
-import type { SearchPayload } from "../service/api"; // 타입
+import { searchRecalls } from "../service/api";
+import type { SearchPayload } from "../service/api";
+
+const MIN_SPIN_MS = 3000; // 최소 표시 시간(ms)
 
 export default function LoadingPage() {
   const navigate = useNavigate();
   const { state } = useLocation() as { state?: { payload?: SearchPayload } };
 
+  // ✅ 모바일에서 진짜 뷰포트 높이 보정(--app-vh)
   useEffect(() => {
-    console.log("API_BASE =", import.meta.env.VITE_API_BASE);
+    const setVH = () => {
+      document.documentElement.style.setProperty("--app-vh", `${window.innerHeight}px`);
+    };
+    setVH();
+    window.addEventListener("resize", setVH);
+    window.addEventListener("orientationchange", setVH);
+    return () => {
+      window.removeEventListener("resize", setVH);
+      window.removeEventListener("orientationchange", setVH);
+    };
+  }, []);
+
+  // ✅ API 호출 + 최소 표시 시간 보장
+  useEffect(() => {
     const payload = state?.payload;
     if (!payload) {
       navigate("/", { replace: true });
       return;
     }
 
+    let cancelled = false;
+    const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
     (async () => {
+      const started = performance.now();
       try {
         const data = await searchRecalls(payload);
-        navigate("/searchresult", { state: { data } });
+
+        const elapsed = performance.now() - started;
+        if (elapsed < MIN_SPIN_MS) await sleep(MIN_SPIN_MS - elapsed);
+        if (cancelled) return;
+
+        if (data?.found === false) {
+          navigate("/notfound", { replace: true, state: { payload, data } });
+        } else {
+          navigate("/searchresult", { replace: true, state: { data } });
+        }
       } catch (err: any) {
-        navigate("/searchresult", {
+        const elapsed = performance.now() - started;
+        if (elapsed < MIN_SPIN_MS) await sleep(MIN_SPIN_MS - elapsed);
+        if (cancelled) return;
+
+        navigate("/notfound", {
+          replace: true,
           state: {
             error: true,
             message: err?.message ?? "요청 처리 중 오류가 발생했습니다.",
+            payload,
           },
         });
       }
     })();
+
+    return () => {
+      cancelled = true;
+    };
   }, [navigate, state]);
+
+  // 🔧 레이아웃/스타일 노브(원본 유지)
+  const UI = {
+    canvasW: 393,
+    padX: 16,
+    bgUseGradient: false,
+    titleTop: 80,
+    subGap: 4,
+    spinnerGap: 30,
+    spinnerSize: 56,
+    spinnerThickness: 6,
+
+    cautionTop: 170,
+    cautionW: 361,
+    cautionInterval: 3000,
+    cautionStart: 0,
+
+    // 마스코트: 주의 카드 섹션을 기준으로 배치 (px)
+    mascotW: 149,
+    mascotRight: 16,
+    mascotTopOverCaution: -135, // 섹션 상단에서 아래로(+)/위로(-) 이동
+  };
 
   return (
     <div
       className="min-h-[100dvh] grid place-items-center"
       style={{
-        background: colors.primarySoft,
+        // ⬇️ 뷰포트 고정(신규 추가)
+        height: "min(100svh, var(--app-vh, 100vh))",
+        background: UI.bgUseGradient
+          ? `linear-gradient(180deg, ${palette.blue["20"]} 0%, #ffffff 31%)`
+          : colors.primarySoft,
       }}
+      aria-busy="true"
     >
       <main
         className="relative w-full min-h-[100dvh] pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]"
-        style={{ maxWidth: 393, paddingLeft: 16, paddingRight: 16 }}
+        style={{
+          maxWidth: UI.canvasW,
+          paddingLeft: UI.padX,
+          paddingRight: UI.padX,
+          // ⬇️ 원본 유지 + 뷰포트 보정치로 덮어쓰기
+          height: "100%",
+          minHeight: "min(100svh, var(--app-vh, 100vh))",
+        }}
       >
-        <section
-          className="text-center"
-          style={{ marginTop: 80 }}
-          aria-live="polite"
-        >
-          <h1 className="text-[#222] font-bold" style={typography.head.h3}>
+        {/* 타이틀 & 서브텍스트 & 스피너 */}
+        <section className="text-center" style={{ marginTop: UI.titleTop }} aria-live="polite">
+          <h1
+            className="text-[#222] font-bold"
+            style={{
+              ...typography.head.h3,
+              lineHeight: `${typography.head.h3.lineHeight}px`,
+            }}
+          >
             안전성 검증 중...
           </h1>
-          <p
+
+        <p
             className="text-[#555]"
-            style={{ ...typography.body.b3, marginTop: 4 }}
+            style={{
+              marginTop: UI.subGap,
+              ...typography.body.b3,
+              lineHeight: `${typography.body.b3.lineHeight}px`,
+            }}
           >
             잠시만 기다려주세요
           </p>
-          <div style={{ marginTop: 30 }}>
-            <Loading size={56} thickness={6} arcColor={colors.primary} />
+
+          <div style={{ marginTop: UI.spinnerGap }}>
+            <Loading size={UI.spinnerSize} thickness={UI.spinnerThickness} arcColor={colors.primary} />
           </div>
         </section>
 
-        <section className="relative" style={{ marginTop: 170 }}>
+        {/* 주의 카드 섹션: 상대배치 기준 생성 */}
+        <section className="relative" style={{ marginTop: UI.cautionTop }}>
+          {/* 마스코트: 주의 카드 섹션을 기준으로 절대배치 (뒤로) */}
           <img
             src={mascot}
             alt=""
             className="absolute pointer-events-none select-none z-10"
-            style={{ width: 149, right: 16, top: -135 }}
+            style={{
+              width: UI.mascotW,
+              right: UI.mascotRight,
+              top: UI.mascotTopOverCaution,
+            }}
           />
-          <div
-            className="relative z-20"
-            style={{ width: 361, margin: "0 auto" }}
-          >
-            <CautionInfo className="w-full" intervalMs={3000} startIndex={0} />
+
+          {/* 주의 카드(위로) */}
+          <div className="relative z-20" style={{ width: UI.cautionW, margin: "0 auto" }}>
+            <CautionInfo
+              className="w-full"
+              intervalMs={UI.cautionInterval}
+              startIndex={UI.cautionStart}
+              // ⬇️ 레이아웃 밀림 방지(이미지 슬라이드용 고정 비율)
+              aspectRatio={UI.cautionW / 160}
+            />
           </div>
         </section>
       </main>

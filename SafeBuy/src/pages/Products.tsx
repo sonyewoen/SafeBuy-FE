@@ -1,3 +1,4 @@
+// src/pages/Products.tsx
 import { useLocation, useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import ItemDetail from "../components/ItemDetail";

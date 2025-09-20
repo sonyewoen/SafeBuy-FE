@@ -1,212 +1,95 @@
-// src/components/GaugeInfo.tsx
-import { useId, useMemo } from "react";
-import { colors, palette } from "../tokens/token";
-import needleSvg from "../assets/img/needle.svg";
+// src/components/CautionInfo.tsx
+import { useEffect, useRef, useState } from "react";
+
+// 8장의 주의 카드 이미지 (caution1.png ~ caution8.png)
+import c1 from "../assets/img/caution1.png";
+import c2 from "../assets/img/caution2.png";
+import c3 from "../assets/img/caution3.png";
+import c4 from "../assets/img/caution4.png";
+import c5 from "../assets/img/caution5.png";
+import c6 from "../assets/img/caution6.png";
+import c7 from "../assets/img/caution7.png";
+import c8 from "../assets/img/caution8.png";
+
+const DEFAULT_IMAGES = [c1, c2, c3, c4, c5, c6, c7, c8];
 
 type Props = {
-  value: number; // 0~100
-  width?: number; // 게이지 폭(px)
-  thickness?: number; // 링 두께(px)
-  title?: string;
-  note?: string;
+  /** 보여줄 카드 이미지들 (기본: caution1~8) */
+  images?: string[];
+  /** 전환 간격(ms) — 기본 3초 */
+  intervalMs?: number;
+  /** 시작 인덱스 (0 기반) */
+  startIndex?: number;
+  /** 외부 스타일 */
   className?: string;
-
-  // 바늘(이미지) 관련
-  needleLengthRatio?: number; // r 대비 길이 비율 (기본 0.62)
-  needleHeightRatio?: number; // thickness 대비 높이 비율 (기본 3)
-  needleOpacity?: number; // 기본 0.35
-  needleOffsetDeg?: number; // 회전 보정각도 (선택, 기본 0)
+  /** 포커스/호버 시 자동전환 멈춤 여부 (기본 true) */
+  pauseOnHover?: boolean;
+  /** 컨테이너 가로:세로 비율(레이아웃 고정용). 예: 361/160 */
+  aspectRatio?: number;
+  /** aspectRatio 대신 픽셀 고정 높이를 쓰고 싶을 때 */
+  fixedHeightPx?: number;
 };
 
-export default function GaugeInfo({
-  value,
-  width = 210,
-  thickness = 18,
-  title,
-  note,
+export default function CautionInfo({
+  images = DEFAULT_IMAGES,
+  intervalMs = 3000,
+  startIndex = 0,
   className = "",
-  needleLengthRatio = 0.62,
-  needleHeightRatio = 3,
-  needleOpacity = 0.35,
-  needleOffsetDeg = 0,
+  pauseOnHover = true,
+  aspectRatio = 361 / 160,
+  fixedHeightPx,
 }: Props) {
-  const id = useId();
-  const v = clamp(value, 0, 100);
+  const len = Math.max(1, images.length);
+  const safeStart = ((startIndex % len) + len) % len;
 
-  // ── geometry ──
-  const r = width / 2 - thickness / 2;
+  const [idx, setIdx] = useState<number>(safeStart);
+  const [fadeKey, setFadeKey] = useState<number>(0); // 페이드 재생용 키
+  const pausedRef = useRef<boolean>(false);
 
-  // 배지 여백(잘림 방지)
-  const badgeR = 18;
-  const padX = badgeR + 6;
-  const padY = badgeR + 6;
+  // 이미지 배열 길이/간격이 바뀔 때마다 타이머 재설정
+  useEffect(() => {
+    if (len <= 1) return;
 
-  const svgW = width + padX * 2;
-  const svgH = r + thickness * 1.6 + padY;
+    const id = window.setInterval(() => {
+      if (!pausedRef.current) {
+        setIdx((p) => (p + 1) % len);
+        setFadeKey((k) => k + 1);
+      }
+    }, intervalMs);
 
-  const cx = padX + width / 2;
-  const cy = r + thickness + padY * 0.2;
+    return () => {
+      clearInterval(id); // 항상 void 반환 → TS OK
+    };
+  }, [len, intervalMs]);
 
-  const L = Math.PI * r; // 반원 길이
-  const progress = (v / 100) * L;
-
-  // 배지 좌표(값 따라 이동)
-  const angleRad = Math.PI - (Math.PI * v) / 100; // 좌(180°)→우(0°)
-  const badge = useMemo(() => {
-    const bx = cx + r * Math.cos(angleRad);
-    const by = cy - r * Math.sin(angleRad);
-    return { bx, by, br: badgeR };
-  }, [angleRad, cx, cy, r]);
-
-  const { label, tone, ring, text } = getStatus(v);
-
-  // 바늘 각도 계산 (0 → 100 == 180° → 0°)
-  const needleDeg = 180 - (180 * v) / 100 + needleOffsetDeg;
-
-  // 바늘 이미지 배치(왼쪽 중앙이 회전축)
-  const needleLen = r * needleLengthRatio;
-  const needleH = thickness * needleHeightRatio;
-  const needleX = cx; // 왼쪽끝을 중심에 붙임
-  const needleY = cy - needleH / 2; // 수직 중앙
+  // 시작 인덱스나 이미지 길이가 바뀌면 현재 인덱스 리셋
+  useEffect(() => {
+    setIdx(safeStart);
+  }, [safeStart, len]);
 
   return (
-    <div className={["w-full", className].join(" ")}>
-      <div className="flex flex-col items-center">
-        <svg
-          width={svgW}
-          height={svgH}
-          viewBox={`0 0 ${svgW} ${svgH}`}
-          className="block"
-        >
-          <defs>
-            <path
-              id={`arc-${id}`}
-              d={`M ${cx - r} ${cy} A ${r} ${r} 0 0 1 ${cx + r} ${cy}`}
-            />
-            <linearGradient id={`grad-${id}`} x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor={palette.green.base} />
-              <stop offset="50%" stopColor={palette.yellow.base} />
-              <stop offset="100%" stopColor={palette.red.base} />
-            </linearGradient>
-          </defs>
-
-          {/* 트랙 */}
-          <use
-            href={`#arc-${id}`}
-            stroke="#EAEAEA"
-            strokeWidth={thickness}
-            strokeLinecap="round"
-            fill="none"
-          />
-
-          {/* 진행(값에 따라) */}
-          <use
-            href={`#arc-${id}`}
-            stroke={`url(#grad-${id})`}
-            strokeWidth={thickness}
-            strokeLinecap="round"
-            fill="none"
-            style={{
-              strokeDasharray: `${L} ${L}`,
-              strokeDashoffset: L - progress,
-              transition: "stroke-dashoffset 600ms ease",
-            }}
-          />
-
-          {/* 바늘: 값에 따라 회전 */}
-          <g
-            transform={`rotate(${needleDeg} ${cx} ${cy})`}
-            style={{ transition: "transform 300ms ease" }}
-            opacity={needleOpacity}
-          >
-            <image
-              href={needleSvg}
-              x={needleX}
-              y={needleY}
-              width={needleLen}
-              height={needleH}
-              preserveAspectRatio="xMinYMid meet"
-            />
-          </g>
-
-          {/* 점수 배지 */}
-          <g transform={`translate(${badge.bx}, ${badge.by})`}>
-            <circle r={badge.br} fill="#fff" stroke={ring} strokeWidth="3" />
-            <text
-              x="0"
-              y="0"
-              textAnchor="middle"
-              dominantBaseline="central"
-              fontSize="14"
-              fontWeight={700}
-              fill={text}
-            >
-              {v}
-            </text>
-          </g>
-        </svg>
-
-        {title && (
-          <h3 className="mt-4 text-[16px] leading-[24px] font-bold text-[#333] text-center">
-            {title}
-          </h3>
-        )}
-
-        <div className="mt-2 flex items-center gap-4">
-          <div className="flex items-center gap-1 text-[16px] leading-[24px]">
-            <span className="text-[#888] font-semibold">위험점수</span>
-            <span className="font-semibold" style={{ color: tone }}>
-              {v}점
-            </span>
-          </div>
-          <span
-            className="rounded px-2 py-[2px] text-[14px] font-semibold"
-            style={{ color: tone, background: withAlpha(tone, 0.1) }}
-          >
-            {label}
-          </span>
-        </div>
-
-        {note && (
-          <p className="mt-4 text-[16px] leading-[24px] text-center">
-            <span className="font-semibold text-[#555]">{note}</span>
-          </p>
-        )}
-      </div>
+    <div
+      className={`relative ${className}`}
+      onMouseEnter={() => (pausedRef.current = pauseOnHover)}
+      onMouseLeave={() => (pausedRef.current = false)}
+      onFocus={() => (pausedRef.current = pauseOnHover)}
+      onBlur={() => (pausedRef.current = false)}
+      role="img"
+      aria-label={`안내 카드 ${idx + 1} / ${len}`}
+      // 높이 사전 예약(레이아웃 시프트 방지)
+      style={
+        fixedHeightPx
+          ? { width: "100%", height: fixedHeightPx, overflow: "hidden" }
+          : { width: "100%", aspectRatio, overflow: "hidden" }
+      }
+    >
+      <img
+        key={fadeKey}
+        src={images[idx] || ""}
+        alt=""
+        draggable={false}
+        className="absolute inset-0 h-full w-full object-contain animate-[fade_400ms_ease]"
+      />
     </div>
   );
-}
-
-/* helpers */
-function clamp(n: number, min: number, max: number) {
-  return Math.max(min, Math.min(max, n));
-}
-function withAlpha(hex: string, a: number) {
-  const s = hex.replace("#", "");
-  const r = parseInt(s.slice(0, 2), 16);
-  const g = parseInt(s.slice(2, 4), 16);
-  const b = parseInt(s.slice(4, 6), 16);
-  return `rgba(${r},${g},${b},${a})`;
-}
-function getStatus(v: number) {
-  if (v >= 70)
-    return {
-      label: "위험",
-      tone: colors.error,
-      ring: colors.error,
-      text: colors.error,
-    };
-  if (v >= 40)
-    return {
-      label: "주의",
-      tone: colors.warning,
-      ring: colors.warning,
-      text: "#b08900",
-    };
-  return {
-    label: "안전",
-    tone: colors.success,
-    ring: colors.success,
-    text: "#2f7a2f",
-  };
 }

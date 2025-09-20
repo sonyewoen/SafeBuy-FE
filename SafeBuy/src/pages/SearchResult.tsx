@@ -1,3 +1,4 @@
+// src/pages/SearchResult.tsx
 import { useLocation, useNavigate } from "react-router-dom";
 import search from "../assets/img/searchbarWhite.svg";
 import Header from "../components/Header";
@@ -12,7 +13,6 @@ export default function SearchResult() {
   const { state } = useLocation() as {
     state?: { data?: SearchResponse; error?: boolean; message?: string };
   };
-  console.log("SearchResult state:", state);
 
   const data = state?.data;
   const error = state?.error;
@@ -24,13 +24,14 @@ export default function SearchResult() {
       style={{ background: colors.primarySoft }}
     >
       <Header title="검색 결과" />
+
       <button
         type="button"
         onClick={() => navigate("/search")}
         className="block w-full p-0 bg-transparent"
         aria-label="제품 정보 입력 화면으로 이동"
       >
-        <img src={search} />
+        <img src={search} alt="" />
       </button>
 
       {/* 에러 처리 */}
@@ -48,7 +49,7 @@ export default function SearchResult() {
           {/* 리콜 조회 결과(위험 점수) */}
           <div className="bg-[#ffffff] rounded-lg px-4 py-6 mt-6 mb-4">
             <GaugeInfo
-              value={data.found ? 80 : 0} // TODO: 위험도 계산 로직 연결
+              value={80} needleOffsetDeg={18} // TODO: 위험도 계산 로직 연결
               title={data.productName ?? "알 수 없는 제품"}
               note={
                 data.found ? (
@@ -71,9 +72,7 @@ export default function SearchResult() {
                     </span>
                     으로 확인되었습니다.
                   </span>
-                ) : (
-                  ""
-                )
+                ) : undefined
               }
             />
           </div>
@@ -81,10 +80,10 @@ export default function SearchResult() {
           {/* 상세 정보 */}
           <div className="bg-[#ffffff] rounded-lg mb-[42px]">
             <ItemDetailInfo
-              productName={data?.productName}
-              defectContent={data?.defectContent}
-              manufacturer={data?.manufacturer}
-              publicationDate={data?.publicationDate}
+              productName={data.productName}
+              defectContent={data.defectContent}
+              manufacturer={data.manufacturer}
+              publicationDate={data.publicationDate}
             />
           </div>
 

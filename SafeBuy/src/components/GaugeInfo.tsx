@@ -1,21 +1,22 @@
 // src/components/GaugeInfo.tsx
-import { useId, useMemo } from "react";
-import { colors, palette } from "../tokens/token";
-import needleSvg from "../assets/img/needle.svg";
+import { useId, useMemo } from 'react';
+import type { ReactNode } from 'react';
+import { colors, palette } from '../tokens/token';
+import needleSvg from '../assets/img/needle.svg';
 
 type Props = {
-  value: number; // 0~100
-  width?: number; // 게이지 폭(px)
-  thickness?: number; // 링 두께(px)
+  value: number;                 // 0~100
+  width?: number;                // 게이지 폭(px)
+  thickness?: number;            // 링 두께(px)
   title?: string;
-  note?: React.ReactNode;
+  note?: ReactNode;              // 문자열/JSX 모두 허용
   className?: string;
 
   // 바늘(이미지) 관련
-  needleLengthRatio?: number; // r 대비 길이 비율 (기본 0.62)
-  needleHeightRatio?: number; // thickness 대비 높이 비율 (기본 3)
-  needleOpacity?: number; // 기본 0.35
-  needleOffsetDeg?: number; // 회전 보정각도 (선택, 기본 0)
+  needleLengthRatio?: number;    // r 대비 길이 비율 (기본 0.62)
+  needleHeightRatio?: number;    // thickness 대비 높이 비율 (기본 3)
+  needleOpacity?: number;        // 기본 0.35
+  needleOffsetDeg?: number;      // 이미지 기울기 보정
 };
 
 export default function GaugeInfo({
@@ -24,7 +25,7 @@ export default function GaugeInfo({
   thickness = 18,
   title,
   note,
-  className = "",
+  className = '',
   needleLengthRatio = 0.62,
   needleHeightRatio = 3,
   needleOpacity = 0.35,
@@ -47,7 +48,7 @@ export default function GaugeInfo({
   const cx = padX + width / 2;
   const cy = r + thickness + padY * 0.2;
 
-  const L = Math.PI * r; // 반원 길이
+  const L = Math.PI * r;                 // 반원 길이
   const progress = (v / 100) * L;
 
   // 배지 좌표(값 따라 이동)
@@ -60,29 +61,21 @@ export default function GaugeInfo({
 
   const { label, tone, ring, text } = getStatus(v);
 
-  // 바늘 각도 계산 (0 → 100 == 180° → 0°)
-  const needleDeg = 180 - (180 * v) / 100 + needleOffsetDeg;
+  // 바늘 각도: 0→-180°, 50→-90°, 100→0° (위쪽 반원)
+  const needleDeg = 180 * (v / 100 - 1) + needleOffsetDeg;
 
   // 바늘 이미지 배치(왼쪽 중앙이 회전축)
   const needleLen = r * needleLengthRatio;
   const needleH = thickness * needleHeightRatio;
-  const needleX = cx; // 왼쪽끝을 중심에 붙임
+  const needleX = cx;               // 왼쪽끝을 중심에 붙임
   const needleY = cy - needleH / 2; // 수직 중앙
 
   return (
-    <div className={["w-full", className].join(" ")}>
+    <div className={['w-full', className].join(' ')}>
       <div className="flex flex-col items-center">
-        <svg
-          width={svgW}
-          height={svgH}
-          viewBox={`0 0 ${svgW} ${svgH}`}
-          className="block"
-        >
+        <svg width={svgW} height={svgH} viewBox={`0 0 ${svgW} ${svgH}`} className="block">
           <defs>
-            <path
-              id={`arc-${id}`}
-              d={`M ${cx - r} ${cy} A ${r} ${r} 0 0 1 ${cx + r} ${cy}`}
-            />
+            <path id={`arc-${id}`} d={`M ${cx - r} ${cy} A ${r} ${r} 0 0 1 ${cx + r} ${cy}`} />
             <linearGradient id={`grad-${id}`} x1="0%" y1="0%" x2="100%" y2="0%">
               <stop offset="0%" stopColor={palette.green.base} />
               <stop offset="50%" stopColor={palette.yellow.base} />
@@ -109,16 +102,12 @@ export default function GaugeInfo({
             style={{
               strokeDasharray: `${L} ${L}`,
               strokeDashoffset: L - progress,
-              transition: "stroke-dashoffset 600ms ease",
+              transition: 'stroke-dashoffset 600ms ease',
             }}
           />
 
-          {/* 바늘: 값에 따라 회전 */}
-          <g
-            transform={`rotate(${needleDeg} ${cx} ${cy})`}
-            style={{ transition: "transform 300ms ease" }}
-            opacity={needleOpacity}
-          >
+          {/* 바늘: 정확한 회전축(cx, cy)으로 회전 */}
+          <g transform={`rotate(${needleDeg} ${cx} ${cy})`} opacity={needleOpacity}>
             <image
               href={needleSvg}
               x={needleX}
@@ -126,10 +115,11 @@ export default function GaugeInfo({
               width={needleLen}
               height={needleH}
               preserveAspectRatio="xMinYMid meet"
+              style={{ pointerEvents: 'none' }}
             />
           </g>
 
-          {/* 점수 배지 */}
+          {/* 점수 배지(호 위에서 위치) */}
           <g transform={`translate(${badge.bx}, ${badge.by})`}>
             <circle r={badge.br} fill="#fff" stroke={ring} strokeWidth="3" />
             <text
@@ -182,7 +172,7 @@ function clamp(n: number, min: number, max: number) {
   return Math.max(min, Math.min(max, n));
 }
 function withAlpha(hex: string, a: number) {
-  const s = hex.replace("#", "");
+  const s = hex.replace('#', '');
   const r = parseInt(s.slice(0, 2), 16);
   const g = parseInt(s.slice(2, 4), 16);
   const b = parseInt(s.slice(4, 6), 16);
@@ -190,23 +180,8 @@ function withAlpha(hex: string, a: number) {
 }
 function getStatus(v: number) {
   if (v >= 70)
-    return {
-      label: "위험",
-      tone: colors.error,
-      ring: colors.error,
-      text: colors.error,
-    };
+    return { label: '위험', tone: colors.error, ring: colors.error, text: colors.error };
   if (v >= 40)
-    return {
-      label: "주의",
-      tone: colors.warning,
-      ring: colors.warning,
-      text: "#b08900",
-    };
-  return {
-    label: "안전",
-    tone: colors.success,
-    ring: colors.success,
-    text: "#2f7a2f",
-  };
+    return { label: '주의', tone: colors.warning, ring: colors.warning, text: '#b08900' };
+  return { label: '안전', tone: colors.success, ring: colors.success, text: '#2f7a2f' };
 }
