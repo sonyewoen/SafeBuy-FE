@@ -20,7 +20,10 @@ export default function SearchResult() {
 
   return (
     // 🔹 전체 화면 배경 전용 래퍼 (레이아웃 영향 없음)
-    <div className="min-h-[100dvh] w-full" style={{ background: colors.primarySoft }}>
+    <div
+      className="min-h-[100dvh] w-full"
+      style={{ background: colors.primarySoft }}
+    >
       {/* ⬇ 기존 컨테이너: 위치/여백 그대로 유지 (배경 제거) */}
       <div className="p-4 min-h-[100dvh] max-w-[393px] mx-auto">
         <Header title="검색 결과" />
@@ -28,7 +31,7 @@ export default function SearchResult() {
         <button
           type="button"
           onClick={() => navigate("/search")}
-          className="block w-full p-0 bg-transparent"
+          className="block w-full p-0 bg-transparent cursor-pointer"
           aria-label="제품 정보 입력 화면으로 이동"
         >
           <img src={search} alt="" />
@@ -46,11 +49,13 @@ export default function SearchResult() {
         {/* API 응답 데이터 */}
         {data && (
           <>
+            {console.log("API 응답 데이터:", data)}
             {/* 리콜 조회 결과(위험 점수) */}
             <div className="bg-[#ffffff] rounded-lg px-4 py-6 mt-6 mb-4">
               <GaugeInfo
-                value={80}
-                needleOffsetDeg={18} // TODO: 위험도 계산 로직 연결
+                value={data.riskScore}
+                needleOffsetDeg={18}
+                riskLevel={data.riskLevel}
                 title={data.productName ?? "알 수 없는 제품"}
                 note={
                   data.found ? (
@@ -77,7 +82,6 @@ export default function SearchResult() {
                 }
               />
             </div>
-
             {/* 상세 정보 */}
             <div className="bg-[#ffffff] rounded-lg mb-[42px]">
               <ItemDetailInfo
@@ -85,9 +89,9 @@ export default function SearchResult() {
                 defectContent={data.defectContent}
                 manufacturer={data.manufacturer}
                 publicationDate={data.publicationDate}
+                url={data.detailUrl}
               />
             </div>
-
             {/* 대체상품 추천 */}
             <h1
               style={{
@@ -108,9 +112,8 @@ export default function SearchResult() {
             >
               안전한 대체 상품을 추천해드려요.
             </h3>
-
             {/* 추천 상품 카드리스트 */}
-            <div className="overflow-hidden -mr-4">
+            <div className="overflow-x-auto hide-scrollbar -mr-4">
               <div className="flex gap-3">
                 {data.alternatives?.slice(0, 3).map((product, index) => (
                   <ItemDetail
@@ -125,7 +128,6 @@ export default function SearchResult() {
                 ))}
               </div>
             </div>
-
             {/* 더보기 버튼 */}
             <button
               className="w-full border text-center rounded-lg px-4 py-3 mt-4 bg-[#FFF] cursor-pointer"

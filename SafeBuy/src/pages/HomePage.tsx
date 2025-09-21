@@ -50,7 +50,7 @@ export default function HomePage() {
             type="button"
             aria-label="도움말 열기"
             onClick={() => setOpen(true)}
-            className="block h-6 w-6"
+            className="block h-6 w-6 cursor-pointer"
             style={{ lineHeight: 0 }}
           >
             <img src={iconQ} alt="" className="block h-6 w-6" />
@@ -92,7 +92,7 @@ export default function HomePage() {
                 onClick={() => navigate('/search')}
                 className="block w-full p-0 bg-transparent"
                 aria-label="제품 정보 입력 화면으로 이동">
-          <img src={searchbar} alt="제품 정보를 입력해보세요." className="block w-full h-auto" />
+          <img src={searchbar} alt="제품 정보를 입력해보세요." className="block w-full h-auto cursor-pointer" />
           </button>
         </section>
       </main>

@@ -6,6 +6,7 @@ import needleSvg from '../assets/img/needle.svg';
 
 type Props = {
   value: number;                 // 0~100
+  riskLevel?: string | null;            // 위험도 단계
   width?: number;                // 게이지 폭(px)
   thickness?: number;            // 링 두께(px)
   title?: string;
@@ -21,6 +22,7 @@ type Props = {
 
 export default function GaugeInfo({
   value,
+  riskLevel,
   width = 210,
   thickness = 18,
   title,
@@ -59,7 +61,7 @@ export default function GaugeInfo({
     return { bx, by, br: badgeR };
   }, [angleRad, cx, cy, r]);
 
-  const { label, tone, ring, text } = getStatus(v);
+  const { label, tone, ring, text } = getStatus(riskLevel ?? "알 수 없음");
 
   // 바늘 각도: 0→-180°, 50→-90°, 100→0° (위쪽 반원)
   const needleDeg = 180 * (v / 100 - 1) + needleOffsetDeg;
@@ -178,10 +180,34 @@ function withAlpha(hex: string, a: number) {
   const b = parseInt(s.slice(4, 6), 16);
   return `rgba(${r},${g},${b},${a})`;
 }
-function getStatus(v: number) {
-  if (v >= 70)
-    return { label: '위험', tone: colors.error, ring: colors.error, text: colors.error };
-  if (v >= 40)
-    return { label: '주의', tone: colors.warning, ring: colors.warning, text: '#b08900' };
-  return { label: '안전', tone: colors.success, ring: colors.success, text: '#2f7a2f' };
-}
+function getStatus(riskLevel: string) {
+switch (riskLevel) {
+    case "고위험":
+      return {
+        label: "고위험",
+        tone: colors.error,
+        ring: colors.error,
+        text: colors.error,
+      };
+    case "중위험":
+      return {
+        label: "중위험",
+        tone: colors.warning,
+        ring: colors.warning,
+        text: "#b08900",
+      };
+    case "저위험":
+      return {
+        label: "저위험",
+        tone: colors.success,
+        ring: colors.success,
+        text: "#2f7a2f",
+      };
+    default:
+      return {
+        label: "없음",
+        tone: colors.textSecondary,
+        ring: colors.textSecondary,
+        text: colors.textSecondary,
+      };
+  }}

@@ -14,6 +14,9 @@ export type SearchResponse = {
   publicationDate: string | null;
   message: string | null;
   alternatives: AlternativeProduct[];
+  riskScore: number;
+  riskLevel: string | null;
+  detailUrl: string | null;
 };
 
 export type AlternativeProduct = {

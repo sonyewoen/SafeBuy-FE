@@ -10,14 +10,15 @@ type ItemDetailInfoProps = {
   url?: string | null; // 원본 링크(있으면)
 };
 
-// YYYY-MM-DD 형태로 최대한 정규화
-function formatDate(input?: string | null) {
+//날짜 정규화
+function formatDate(input?: string | null): string | null {
   if (!input) return null;
-  // 1) 이미 YYYY-MM-DD라면 그대로
-  if (/^\d{4}-\d{2}-\d{2}$/.test(input)) return input;
-  // 2) ISO 형태 등에서 앞 10자리 자르기
-  const d = input.slice(0, 10);
-  return /^\d{4}-\d{2}-\d{2}$/.test(d) ? d : input;
+
+  const year = input.slice(0, 4);
+  const month = input.slice(4, 6);
+  const day = input.slice(6, 8);
+
+  return `${year}-${month}-${day}`;
 }
 
 // 라벨+값 좌우 배치
@@ -82,6 +83,7 @@ export default function ItemDetailInfo({
             ...typography.body.b4,
             lineHeight: "normal",
             color: colors.textMuted,
+            cursor: "pointer",
           }}
         >
           더 자세한 내용 보러가기{" "}
