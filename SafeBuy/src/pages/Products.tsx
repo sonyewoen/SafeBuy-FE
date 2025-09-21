@@ -44,7 +44,7 @@ export default function Products() {
           lineHeight: `${typography.head.h5.lineHeight}px`,
         }}
       >
-        대체상품 추천
+        대체 상품 추천
       </h1>
       <h3
         style={{
@@ -54,7 +54,7 @@ export default function Products() {
           marginBottom: "16px",
         }}
       >
-        안전한 대체 상품을 추천해드려요.
+        안전한 대체 상품을 추천해 드려요.
       </h3>
 
       {/* 추천 상품 카드리스트 */}

@@ -144,7 +144,7 @@ export default function LoadingPage() {
               lineHeight: `${typography.body.b3.lineHeight}px`,
             }}
           >
-            잠시만 기다려주세요
+            잠시만 기다려 주세요.
           </p>
 
           <div style={{ marginTop: UI.spinnerGap }}>

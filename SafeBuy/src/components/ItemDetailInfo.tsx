@@ -69,7 +69,7 @@ export default function ItemDetailInfo({
   return (
     <div className="rounded-md p-4">
       <div className="space-y-2 text-sm">
-        <LabelRow label="모델명" value={safeName} />
+        <LabelRow label="상품명" value={safeName} />
         <LabelRow label="결함 내용" value={safeDefect} />
         <LabelRow label="제조사" value={safeMaker} />
         <LabelRow label="공표일" value={safeDate} />
@@ -86,7 +86,7 @@ export default function ItemDetailInfo({
             cursor: "pointer",
           }}
         >
-          더 자세한 내용 보러가기{" "}
+          더 자세한 내용 보러 가기{" "}
           <img src={icon} style={{ width: 12, height: 12 }} />
         </span>
       </div>

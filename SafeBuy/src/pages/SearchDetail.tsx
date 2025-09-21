@@ -86,7 +86,7 @@ export default function SearchDetail() {
       >
         {/* 헤더 위치 조절용 래퍼 */}
         <div style={{ marginTop: UI.headerTop }}>
-          <Header title="제품정보 입력" />
+          <Header title="상품 정보 입력" />
         </div>
 
         {/* 상단 안내 */}
@@ -99,7 +99,7 @@ export default function SearchDetail() {
               lineHeight: `${typography.head.h3.lineHeight}px`,
             }}
           >
-            제품 정보를 입력해주세요.
+            상품 정보를 입력해 주세요.
           </h2>
           <p
             style={{
@@ -113,7 +113,7 @@ export default function SearchDetail() {
           </p>
         </section>
 
-        {/* 제품 사진 */}
+        {/* 상품 사진 */}
         <section style={{ marginTop: UI.photoTop }}>
           <div
             style={{
@@ -122,7 +122,7 @@ export default function SearchDetail() {
               lineHeight: `${typography.body.b2.lineHeight}px`,
             }}
           >
-            제품 사진
+            상품 사진
           </div>
 
           {/* 업로드 + 미리보기 나란히 */}
@@ -198,7 +198,7 @@ export default function SearchDetail() {
               상품명
             </div>
             <InputInfo
-              placeholder="예) 아이폰 가정용 충전기 키트"
+              placeholder="예) 킥보드"
               value={name}
               onChange={setName}
             />
@@ -217,7 +217,7 @@ export default function SearchDetail() {
               제조사
             </div>
             <InputInfo
-              placeholder="예) Edge Imports Inc."
+              placeholder="예) FIREFLY"
               value={maker}
               onChange={setMaker}
             />
@@ -236,7 +236,7 @@ export default function SearchDetail() {
               모델명
             </div>
             <InputInfo
-              placeholder="예) Angel"
+              placeholder="예) A200"
               value={brand}
               onChange={setBrand}
             />

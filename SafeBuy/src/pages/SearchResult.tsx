@@ -32,7 +32,7 @@ export default function SearchResult() {
           type="button"
           onClick={() => navigate("/search")}
           className="block w-full p-0 bg-transparent cursor-pointer"
-          aria-label="제품 정보 입력 화면으로 이동"
+          aria-label="상품 정보 입력 화면으로 이동"
         >
           <img src={search} alt="" />
         </button>
@@ -56,7 +56,7 @@ export default function SearchResult() {
                 value={data.riskScore}
                 needleOffsetDeg={18}
                 riskLevel={data.riskLevel}
-                title={data.productName ?? "알 수 없는 제품"}
+                title={data.productName ?? "알 수 없는 상품"}
                 note={
                   data.found ? (
                     <span
@@ -66,7 +66,7 @@ export default function SearchResult() {
                         lineHeight: `${typography.body.b2.lineHeight}px`,
                       }}
                     >
-                      해당 제품은{" "}
+                      해당 상품은{" "}
                       <span
                         style={{
                           color: colors.textPrimary,
@@ -74,7 +74,7 @@ export default function SearchResult() {
                           lineHeight: `${typography.body.b1.lineHeight}px`,
                         }}
                       >
-                        리콜 제품
+                        리콜 상품
                       </span>
                       으로 확인되었습니다.
                     </span>
@@ -100,7 +100,7 @@ export default function SearchResult() {
                 lineHeight: `${typography.head.h5.lineHeight}px`,
               }}
             >
-              대체상품 추천
+              대체 상품 추천
             </h1>
             <h3
               style={{
@@ -110,7 +110,7 @@ export default function SearchResult() {
                 marginBottom: "16px",
               }}
             >
-              안전한 대체 상품을 추천해드려요.
+              안전한 대체 상품을 추천해 드려요.
             </h3>
             {/* 추천 상품 카드리스트 */}
             <div className="overflow-x-auto hide-scrollbar -mr-4">
@@ -140,7 +140,7 @@ export default function SearchResult() {
               }}
               onClick={() => navigate("/products", { state: { data } })}
             >
-              대체상품 더보기
+              대체 상품 더보기
             </button>
           </>
         )}

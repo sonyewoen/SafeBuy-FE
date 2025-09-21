@@ -71,7 +71,7 @@ export default function HomePage() {
               lineHeight: `${typography.head.h4.lineHeight}px`,
             }}
           >
-            해외직구 상품,<br />안전한지 확인해보세요!
+            해외 직구 상품,<br />안전한지 확인해 보세요!
           </h1>
 
           <img
@@ -92,7 +92,7 @@ export default function HomePage() {
                 onClick={() => navigate('/search')}
                 className="block w-full p-0 bg-transparent"
                 aria-label="제품 정보 입력 화면으로 이동">
-          <img src={searchbar} alt="제품 정보를 입력해보세요." className="block w-full h-auto cursor-pointer" />
+          <img src={searchbar} alt="제품 정보를 입력해 보세요." className="block w-full h-auto cursor-pointer" />
           </button>
         </section>
       </main>

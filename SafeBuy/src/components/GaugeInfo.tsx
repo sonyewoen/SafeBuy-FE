@@ -146,7 +146,7 @@ export default function GaugeInfo({
 
         <div className="mt-2 flex items-center gap-4">
           <div className="flex items-center gap-1 text-[16px] leading-[24px]">
-            <span className="text-[#888] font-semibold">위험점수</span>
+            <span className="text-[#888] font-semibold">위험 점수</span>
             <span className="font-semibold" style={{ color: tone }}>
               {v}점
             </span>

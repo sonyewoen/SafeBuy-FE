@@ -23,7 +23,7 @@ export default function NotFound() {
     state?.payload?.productName ??
     state?.payload?.modelName ??
     state?.payload?.manufacturer ??
-    "입력하신 제품";
+    "입력하신 상품";
 
   return (
     // 🔹 전체 화면 배경 전용 래퍼 (레이아웃 영향 없음)
@@ -51,7 +51,7 @@ export default function NotFound() {
         >
           <span style={{ color: colors.primary }}>'{term}'</span>
           에 <br />
-          해당하는 검색결과가 없어요
+          해당하는 검색 결과가 없어요.
         </h1>
 
         {/* 캐릭터 이미지 */}
