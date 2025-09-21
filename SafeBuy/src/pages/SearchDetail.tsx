@@ -198,7 +198,7 @@ export default function SearchDetail() {
               상품명
             </div>
             <InputInfo
-              placeholder="상품명을 입력해 주세요."
+              placeholder="예) 아이폰 가정용 충전기 키트"
               value={name}
               onChange={setName}
             />
@@ -217,7 +217,7 @@ export default function SearchDetail() {
               제조사
             </div>
             <InputInfo
-              placeholder="제조사를 입력해 주세요."
+              placeholder="예) Edge Imports Inc."
               value={maker}
               onChange={setMaker}
             />
@@ -236,7 +236,7 @@ export default function SearchDetail() {
               모델명
             </div>
             <InputInfo
-              placeholder="브랜드를 입력해 주세요."
+              placeholder="예) Angel"
               value={brand}
               onChange={setBrand}
             />
