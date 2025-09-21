@@ -26,39 +26,40 @@ export default function NotFound() {
     "입력하신 제품";
 
   return (
-    <div
-      className="p-4 min-h-[100dvh] max-w-[393px] mx-auto"
-      style={{ background: colors.primarySoft }}
-    >
-      <Header title="검색 결과" />
+    // 🔹 전체 화면 배경 전용 래퍼 (레이아웃 영향 없음)
+    <div className="min-h-[100dvh] w-full" style={{ background: colors.primarySoft }}>
+      {/* ⬇ 기존 컨테이너: 위치/여백 그대로 유지 */}
+      <div className="p-4 min-h-[100dvh] max-w-[393px] mx-auto">
+        <Header title="검색 결과" />
 
-      {/* 검색 바 */}
-      <button
-        type="button"
-        onClick={() => navigate("/search")}
-        className="block w-full p-0 bg-transparent"
-        aria-label="제품 정보 입력 화면으로 이동"
-      >
-        <img src={search} alt="" />
-      </button>
+        {/* 검색 바 */}
+        <button
+          type="button"
+          onClick={() => navigate("/search")}
+          className="block w-full p-0 bg-transparent"
+          aria-label="제품 정보 입력 화면으로 이동"
+        >
+          <img src={search} alt="" />
+        </button>
 
-      <h1
-        className="text-center mt-11"
-        style={{
-          ...typography.head.h5,
-          lineHeight: `${typography.head.h5.lineHeight}px`,
-        }}
-      >
-        <span style={{ color: colors.primary }}>'{term}'</span>
-        에 <br />
-        해당하는 검색결과가 없어요
-      </h1>
+        <h1
+          className="text-center mt-11"
+          style={{
+            ...typography.head.h5,
+            lineHeight: `${typography.head.h5.lineHeight}px`,
+          }}
+        >
+          <span style={{ color: colors.primary }}>'{term}'</span>
+          에 <br />
+          해당하는 검색결과가 없어요
+        </h1>
 
-      {/* 캐릭터 이미지 */}
-      <img src={notFound} className="flex m-auto mt-3 mb-6" alt="" />
+        {/* 캐릭터 이미지 */}
+        <img src={notFound} className="flex m-auto mt-3 mb-6" alt="" />
 
-      {/* 검색 팁 박스 이미지 */}
-      <img src={searchTip} alt="" />
+        {/* 검색 팁 박스 이미지 */}
+        <img src={searchTip} alt="" />
+      </div>
     </div>
   );
 }
