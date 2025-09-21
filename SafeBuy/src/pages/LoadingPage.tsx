@@ -14,15 +14,20 @@ export default function LoadingPage() {
   const navigate = useNavigate();
   const { state } = useLocation() as { state?: { payload?: SearchPayload } };
 
-  // ✅ 모바일에서 진짜 뷰포트 높이 보정(--app-vh)
+  // ✅ 모바일에서 뷰포트 높이 보정(--app-vh) 정확도 개선
   useEffect(() => {
     const setVH = () => {
-      document.documentElement.style.setProperty("--app-vh", `${window.innerHeight}px`);
+      const vh = window.visualViewport?.height
+        ? Math.round(window.visualViewport.height)
+        : window.innerHeight;
+      document.documentElement.style.setProperty("--app-vh", `${vh}px`);
     };
     setVH();
+    window.visualViewport?.addEventListener("resize", setVH);
     window.addEventListener("resize", setVH);
     window.addEventListener("orientationchange", setVH);
     return () => {
+      window.visualViewport?.removeEventListener("resize", setVH);
       window.removeEventListener("resize", setVH);
       window.removeEventListener("orientationchange", setVH);
     };
@@ -100,8 +105,8 @@ export default function LoadingPage() {
     <div
       className="min-h-[100dvh] grid place-items-center"
       style={{
-        // ⬇️ 뷰포트 고정(신규 추가)
-        height: "min(100svh, var(--app-vh, 100vh))",
+        // ⬇️ 뷰포트 고정: dvh 우선, 보정 변수는 보조로
+        height: "clamp(100svh, var(--app-vh, 100dvh), 100lvh)",
         background: UI.bgUseGradient
           ? `linear-gradient(180deg, ${palette.blue["20"]} 0%, #ffffff 31%)`
           : colors.primarySoft,
@@ -114,9 +119,9 @@ export default function LoadingPage() {
           maxWidth: UI.canvasW,
           paddingLeft: UI.padX,
           paddingRight: UI.padX,
-          // ⬇️ 원본 유지 + 뷰포트 보정치로 덮어쓰기
+          // ⬇️ 뷰포트 보정치로 최소 높이 보장
           height: "100%",
-          minHeight: "min(100svh, var(--app-vh, 100vh))",
+          minHeight: "clamp(100svh, var(--app-vh, 100dvh), 100lvh)",
         }}
       >
         {/* 타이틀 & 서브텍스트 & 스피너 */}
@@ -131,7 +136,7 @@ export default function LoadingPage() {
             안전성 검증 중...
           </h1>
 
-        <p
+          <p
             className="text-[#555]"
             style={{
               marginTop: UI.subGap,
@@ -162,12 +167,20 @@ export default function LoadingPage() {
           />
 
           {/* 주의 카드(위로) */}
-          <div className="relative z-20" style={{ width: UI.cautionW, margin: "0 auto" }}>
+          <div
+            className="relative z-20"
+            style={{
+              width: UI.cautionW,
+              margin: "0 auto",
+              // ⬇️ 안드로이드에서 비율 깨짐 방지를 위해 CSS 비율 고정
+              aspectRatio: `${UI.cautionW} / 160`,
+            }}
+          >
             <CautionInfo
               className="w-full"
               intervalMs={UI.cautionInterval}
               startIndex={UI.cautionStart}
-              // ⬇️ 레이아웃 밀림 방지(이미지 슬라이드용 고정 비율)
+              // ⬇️ 기존 값 유지 (내부 로직에 사용 중일 수 있어 그대로 둠)
               aspectRatio={UI.cautionW / 160}
             />
           </div>
